@@ -1,42 +1,30 @@
 #include "monty.h"
 
 /**
- * _sub -  subtracts top element of the stack from the second top element.
- * @head: double pointer to header (top) of the stack.
+ * _swap -  swaps the top two elements of the stack.
+ * @stack: double pointer to header (top) of the stack.
  * @line_number: counter for line number of the file.
  *
  * Return: void.
  */
-void _sub(stack_t **head, unsigned int line_number)
+void _swap(stack_t **stack, unsigned int line_number)
 {
-	stack_t *current = *head;
-	int nnodes = 1; /*number of elements in stack*/
+	stack_t *temp;
 
-	if (*head == NULL)
+	if (!stack || !*stack || !((*stack)->next))
 	{
-		fprintf(stderr, "L%u: can't sub, stack too short\n", line_number);
-		free_stack_t(*head);
+		fprintf(stderr, "L%d: can't swap, stack too short\n", line_number);
+		free_stack_t(*stack);
 
 		exit(EXIT_FAILURE);
 	}
 
-	while (current->next != NULL)
-	{
-		current = current->next;
-		nnodes++;
-	}
-
-	if (nnodes + 1 <= 2)
-	{
-		fprintf(stderr, "L%u: can't sub, stack too short\n", line_number);
-		exit(EXIT_FAILURE);
-	}
-
-	current = *head; /*current equals to head to make substraction*/
-
-	current->next->n = current->next->n - current->n; /*do the substraction*/
-
-	*head = current->next;
-	free(current);
-	current->prev = NULL;
+	temp = *stack;
+	*stack = (*stack)->next;
+	(*stack)->prev = NULL;
+	if ((*stack)->next)
+		((*stack)->next)->prev = temp;
+	temp->next = (*stack)->next;
+	(*stack)->next = temp;
+	temp->prev = *stack;
 }
